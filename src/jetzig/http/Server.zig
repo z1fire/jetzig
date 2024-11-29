@@ -128,6 +128,9 @@ pub fn processNextRequest(
 ) !void {
     const start_time = std.time.nanoTimestamp();
 
+    var repo = try self.repo.bindConnect();
+    defer repo.release();
+
     var response = try jetzig.http.Response.init(httpz_response.arena, httpz_response);
     var request = try jetzig.http.Request.init(
         httpz_response.arena,
@@ -136,7 +139,7 @@ pub fn processNextRequest(
         httpz_request,
         httpz_response,
         &response,
-        self.repo,
+        &repo,
     );
 
     try request.process();
